@@ -307,7 +307,7 @@ RCT_EXPORT_MODULE()
 + (void)didReceiveNotificationOnBackgroundState:(NSDictionary *)notification
 {
     NSDictionary* managedAps  = [notification objectForKey:@"managedAps"];
-    NSDictionary* alert = [managedAps objectForKey:@"alert"];
+    NSString* action = [managedAps objectForKey:@"action"];
     NSString* notificationId = [managedAps objectForKey:@"notificationId"];
 
     if (action) {
@@ -365,7 +365,7 @@ RCT_EXPORT_MODULE()
     }
 }
 
--(NSString *)formatDateWithString:(NSString *)date
++(NSString *)formatDateWithString:(NSString *)date
 {
     NSDateFormatter * formatter =  [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss z"];
