@@ -308,14 +308,12 @@ RCT_EXPORT_MODULE()
 {
     NSDictionary* managedAps  = [notification objectForKey:@"managedAps"];
     NSDictionary* alert = [managedAps objectForKey:@"alert"];
-    NSString* action = [managedAps objectForKey:@"action"];
     NSString* notificationId = [managedAps objectForKey:@"notificationId"];
 
     if (action) {
         // create or delete notification
         if ([action isEqualToString: RNNotificationCreateAction]
-            && notificationId
-            && alert) {
+            && notificationId) {
             [self dispatchLocalNotificationFromNotification:notification];
 
         } else if ([action isEqualToString: RNNotificationClearAction] && notificationId) {
@@ -341,21 +339,19 @@ RCT_EXPORT_MODULE()
 + (void)dispatchLocalNotificationFromNotification:(NSDictionary *)notification
 {
     NSDictionary* managedAps  = [notification objectForKey:@"managedAps"];
-    NSDictionary* alert = [managedAps objectForKey:@"alert"];
     NSString* action = [managedAps objectForKey:@"action"];
     NSString* notificationId = [managedAps objectForKey:@"notificationId"];
 
-    if ([action isEqualToString: RNNotificationCreateAction]
-        && notificationId
-        && alert) {
+    if ([action isEqualToString: RNNotificationCreateAction] && notificationId) {
 
         // trigger new client push notification
         UILocalNotification* note = [UILocalNotification new];
-        note.alertTitle = [alert objectForKey:@"title"];
-        note.alertBody = [alert objectForKey:@"body"];
+        NSDictionary* payload  = [notification objectForKey:@"data"];
+        note.alertTitle = [payload objectForKey:@"name"];
+        note.alertBody = [self formatDateWithString:[payload objectForKey:@"meetingDate"]];
         note.userInfo = notification;
-        note.soundName = [managedAps objectForKey:@"sound"];
-        note.category = [managedAps objectForKey:@"category"];
+        //note.soundName = [managedAps objectForKey:@"sound"];
+        //note.category = [managedAps objectForKey:@"category"];
 
         [[UIApplication sharedApplication] presentLocalNotificationNow:note];
 
@@ -367,6 +363,16 @@ RCT_EXPORT_MODULE()
 
         NSLog(@"Local notification was triggered: %@", notificationKey);
     }
+}
+
+-(NSString *)formatDateWithString:(NSString *)date
+{
+    NSDateFormatter * formatter =  [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss z"];
+    NSDate * convrtedDate = [formatter dateFromString:date];
+    [formatter setDateFormat:@"EEE dd MMM yyyy hh:mm a"];
+    NSString *dateString = [formatter stringFromDate:convrtedDate];
+    return dateString;
 }
 
 + (void)clearNotificationFromNotificationsCenter:(NSString *)notificationId
