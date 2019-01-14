@@ -349,7 +349,10 @@ RCT_EXPORT_MODULE()
         NSDictionary* payload  = [notification objectForKey:@"data"];
         note.alertTitle = [payload objectForKey:@"name"];
         note.alertBody = [self formatDateWithString:[payload objectForKey:@"meetingDate"]];
-        note.userInfo = notification;
+        NSDictionary *dictionary = @{
+                                     @"id" : [payload objectForKey:@"id"],
+                                     };
+        note.userInfo = dictionary;
         //note.soundName = [managedAps objectForKey:@"sound"];
         //note.category = [managedAps objectForKey:@"category"];
 
@@ -368,7 +371,7 @@ RCT_EXPORT_MODULE()
 +(NSString *)formatDateWithString:(NSString *)date
 {
     NSDateFormatter * formatter =  [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss z"];
+    [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSz"];
     NSDate * convrtedDate = [formatter dateFromString:date];
     [formatter setDateFormat:@"EEE dd MMM yyyy hh:mm a"];
     NSString *dateString = [formatter stringFromDate:convrtedDate];
