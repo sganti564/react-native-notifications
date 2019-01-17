@@ -1,5 +1,4 @@
 #import "RNNotificationsBridgeQueue.h"
-#import <UIKit/UIKit.h>
 
 @implementation RNNotificationsBridgeQueue
 
@@ -36,7 +35,7 @@ NSMutableDictionary* fetchCompletionHandlers;
 }
 
 - (void)postFetchHandler:(NSMutableDictionary *)notification completionKey:(NSString *)completionKey
-  fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
+  fetchCompletionHandler:(void (^)())completionHandler
 {
     fetchCompletionHandlers[completionKey] = completionHandler;
 }
@@ -101,13 +100,13 @@ NSMutableDictionary* fetchCompletionHandlers;
     }
 }
 
-- (void)completeFetch:(NSString *)completionKey fetchResult:(UIBackgroundFetchResult)result
+- (void)completeFetch:(NSString *)completionKey
 {
-    void (^completionHandler)(UIBackgroundFetchResult) =
-    (void (^)(UIBackgroundFetchResult))[fetchCompletionHandlers valueForKey:completionKey];
+    void (^completionHandler)() =
+    (void (^)())[fetchCompletionHandlers valueForKey:completionKey];
     if (completionHandler) {
         [fetchCompletionHandlers removeObjectForKey:completionKey];
-        completionHandler(result);
+        completionHandler();
     }
 }
 

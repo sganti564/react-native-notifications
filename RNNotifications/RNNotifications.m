@@ -326,11 +326,11 @@ RCT_EXPORT_MODULE()
 
 + (void)didReceiveNotificationOnBackgroundState:(NSDictionary *)notification
 {
-    NSDictionary* managedAps  = [notification objectForKey:@"managedAps"];
+    /*NSDictionary* managedAps  = [notification objectForKey:@"managedAps"];
     NSString* action = [managedAps objectForKey:@"action"];
     NSString* notificationId = [managedAps objectForKey:@"notificationId"];
 
-    /*if (action) {
+    if (action) {
         // create or delete notification
         if ([action isEqualToString: RNNotificationCreateAction]
             && notificationId) {
@@ -721,13 +721,7 @@ RCT_EXPORT_METHOD(getDeliveredNotifications:(RCTResponseSenderBlock)callback)
 
 RCT_EXPORT_METHOD(finishRemoteNotification:(NSString *)completionKey fetchResult:(NSString*) result)
 {
-    UIBackgroundFetchResult bgResult = UIBackgroundFetchResultNoData;
-    if ([@"NewData" isEqualToString:result]) {
-        bgResult = UIBackgroundFetchResultNewData;
-    } else if ([@"Failed" isEqualToString:result]) {
-        bgResult = UIBackgroundFetchResultFailed;
-    }
-    [[RNNotificationsBridgeQueue sharedInstance] completeFetch:completionKey fetchResult:bgResult];
+    [[RNNotificationsBridgeQueue sharedInstance] completeFetch:completionKey];
 }
 
 #endif !TARGET_OS_TV
