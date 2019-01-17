@@ -1,3 +1,7 @@
+"use strict";
+import { NativeModules } from "react-native";
+const RNNotifications = NativeModules.RNNotifications;
+
 export default class IOSNotification {
   _data: Object;
   _alert: string | Object;
@@ -6,6 +10,7 @@ export default class IOSNotification {
   _category: string;
   _type: string; // regular / managed
   _thread: string;
+  _finishCalled: boolean;
 
   constructor(notification: Object) {
     this._data = {};
@@ -23,6 +28,7 @@ export default class IOSNotification {
       this._category = notification.managedAps.category;
       this._type = "managed";
       this._thread = notification.aps["thread-id"];
+      this._finishCalled = false;
     } else if (
       notification.aps &&
       notification.aps.alert) {
@@ -67,4 +73,22 @@ export default class IOSNotification {
   getThread(): ?string {
     return this._thread;
   }
+
+  finish(finishResult) {
+    if (!this._finishCalled && this._data._completionHandlerId) {
+      this._finishCalled = true;
+      const result = finishResult || REMOTE_NOTIFICATION_RESULT.NoData;
+      if (!Object.values(REMOTE_NOTIFICATION_RESULT).includes(result)) {
+        throw new Error("Invalid REMOTE_NOTIFICATION_RESULT value");
+      }
+      RNNotifications.finishRemoteNotification(this._data._completionHandlerId, result);
+    }
+  }
 }
+
+export const REMOTE_NOTIFICATION_RESULT = {
+  NewData: "NewData",
+  NoData: "NoData",
+  Failed: "Failed"
+};
+
