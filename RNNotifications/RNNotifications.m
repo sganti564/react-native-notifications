@@ -627,7 +627,9 @@ RCT_EXPORT_METHOD(localNotification:(NSDictionary *)notification withId:(NSStrin
 {
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10")) {
         UNNotificationRequest* localNotification = [RCTConvert UNNotificationRequest:notification withId:notificationId];
-        [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:localNotification withCompletionHandler:nil];
+        [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:localNotification withCompletionHandler:^(NSError *__nullable error) {
+            NSLog(@"Local notification triggered %@", notification);
+        }];
     } else {
         UILocalNotification* localNotification = [RCTConvert UILocalNotification:notification];
         NSMutableArray* userInfo = localNotification.userInfo.mutableCopy;
